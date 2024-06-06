@@ -1,0 +1,23 @@
+// theme.ts
+
+import { createTheme, PaletteOptions } from "@mui/material/styles";
+
+// Define a custom palette interface extending PaletteOptions
+interface CustomPaletteOptions extends PaletteOptions {
+  key?: string;
+}
+
+// Create a theme instance with the custom palette interface
+const theme = createTheme({
+  palette: {
+    background: {
+      default: "#0A0B0D", // Set the background color of the whole body
+    },
+    text: {
+      primary: "#ffffff", // Set the overall text color to white
+    },
+    border: "#0000", // Set the border color
+  } as CustomPaletteOptions, // Cast the palette to the custom palette interface
+});
+
+export default theme;

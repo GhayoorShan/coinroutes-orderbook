@@ -1,35 +1,35 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.tsx
+import React, { useState } from 'react';
+import { Container, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import useWebSocket from './hooks/useWebSocket';
+import TopOfBook from './screens/Dashboard/TopOfBook';
+import LadderView from './screens/Dashboard/LadderView';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+    const [currencyPair, setCurrencyPair] = useState('BTC-USD');
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    const { isConnected } = useWebSocket({
+        url: `wss://ws-feed.pro.coinbase.com`,
+        currencyPair
+    });
+    console.log(isConnected);
 
-export default App
+    return (
+        <Container>
+            <FormControl fullWidth margin="normal">
+                <InputLabel id="currency-pair-label">Currency Pair</InputLabel>
+                <Select labelId="currency-pair-label" value={currencyPair} onChange={(e) => setCurrencyPair(e.target.value)}>
+                    <MenuItem value="BTC-USD">BTC-USD</MenuItem>
+                    <MenuItem value="ETH-USD">ETH-USD</MenuItem>
+                    <MenuItem value="LTC-USD">LTC-USD</MenuItem>
+                    <MenuItem value="BCH-USD">BCH-USD</MenuItem>
+                </Select>
+            </FormControl>
+            <TopOfBook />
+            <LadderView />
+            {/* <PriceChart data={priceData} /> */}
+        </Container>
+    );
+};
+
+export default App;
