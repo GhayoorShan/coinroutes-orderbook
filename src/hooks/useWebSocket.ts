@@ -18,10 +18,10 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
             try {
                 const data = JSON.parse(event.data);
 
-                // if (data.type === 'snapshot') {
-                //     console.log(data.bids[0]);
-                //     dispatch(setOrderBookSnapshot({ bids: data.bids, asks: data.asks }));
-                // }
+                if (data.type === 'snapshot') {
+                    console.log(data.bids[0]);
+                    dispatch(setOrderBookSnapshot({ bids: data.bids, asks: data.asks }));
+                }
                 if (data.type === 'l2update') {
                     throttledUpdateOrderBook(data.changes);
                 }
@@ -42,7 +42,7 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
             console.log('callback');
 
             dispatch(updateOrderBook(changes));
-        }, 2000),
+        }, 100),
         [dispatch]
     );
 

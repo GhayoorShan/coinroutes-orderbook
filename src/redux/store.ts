@@ -1,10 +1,14 @@
-import { configureStore } from "@reduxjs/toolkit";
-import orderBookSlice from "./features/orderBookSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import orderBookSlice from './features/orderBookSlice';
 
 const store = configureStore({
-  reducer: {
-    orderBook: orderBookSlice,
-  },
+    reducer: {
+        orderBook: orderBookSlice
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false
+        })
 });
 
 export type RootState = ReturnType<typeof store.getState>;
