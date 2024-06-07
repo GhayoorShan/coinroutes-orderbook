@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { addPriceData, updateOrderBook, setOrderBookSnapshot, setBestBid, setBestAsk } from '../redux/features/orderBookSlice';
+import {  updateOrderBook, setOrderBookSnapshot, setBestBid, setBestAsk } from '../redux/features/orderBookSlice';
 import { throttle } from '../utils/throttle';
 
 interface UseWebSocketProps {
@@ -22,9 +22,9 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
                     console.log(data.bids[0]);
                     dispatch(setOrderBookSnapshot({ bids: data.bids, asks: data.asks }));
                 }
-                // if (data.type === 'l2update') {
-                //     throttledUpdateOrderBook(data.changes);
-                // }
+                if (data.type === 'l2update') {
+                    throttledUpdateOrderBook(data.changes);
+                }
 
                 if (data.type === 'ticker') {
                     dispatch(setBestBid({ price: data.best_bid, size: data.best_bid_size }));

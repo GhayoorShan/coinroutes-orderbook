@@ -52,12 +52,53 @@ const getTopOrdersWithPercentage = (orders: Record<string, string>, topN: number
 
     const totalSize = topOrders.reduce((sum, order) => sum + Number(order.size), 0);
 
-    topOrders = topOrders.sort((a, b) => Number(b.size) - Number(a.size));
     return topOrders.map((order) => ({
         ...order,
-        size: Number(order.size).toPrecision(8), // Limit size to 8 significant digits
-        percentage: totalSize > 0 ? ((Number(order.size) / totalSize) * 100).toFixed(2) : '0.00' // Limit percentage to 2 decimal places
+        size: Number(order.size).toPrecision(8),
+        percentage: totalSize > 0 ? ((Number(order.size) / totalSize) * 100).toFixed(2) : '0.00'
     }));
+};
+// Order matching logic
+// if the order size is larger than what is made available by the top buyer or seller,
+// the match needs to occur for the number of shares available and the matching algorithm needs to be called recursively for the remaining shares.
+const matchOrder = (state: OrderBookState, side: string, price: string, size: string): string => {
+    let remainingSize = Number(size);
+    if (side === 'buy') {
+        const sortedAsks = Object.keys(state.asks).sort((a, b) => Number(a) - Number(b));
+        for (const askPrice of sortedAsks) {
+            if (Number(price) >= Number(askPrice) && remainingSize > 0) {
+                console.log("Buy match","price", price,"askprice", askPrice, "remainingSize",remainingSize);
+                const askSize = Number(state.asks[askPrice]);
+                if (askSize <= remainingSize) {
+                    remainingSize -= askSize;
+                    delete state.asks[askPrice];
+                } else {
+                    state.asks[askPrice] = (askSize - remainingSize).toString();
+                    remainingSize = 0;
+                }
+            } else {
+                break;
+            }
+        }
+    } else if (side === 'sell') {
+        const sortedBids = Object.keys(state.bids).sort((a, b) => Number(b) - Number(a));
+        for (const bidPrice of sortedBids) {
+            if (Number(price) <= Number(bidPrice) && remainingSize > 0) {
+                console.log("Sell match","price", price,"askprice", bidPrice, "remainingSize",remainingSize);
+                const bidSize = Number(state.bids[bidPrice]);
+                if (bidSize <= remainingSize) {
+                    remainingSize -= bidSize;
+                    delete state.bids[bidPrice];
+                } else {
+                    state.bids[bidPrice] = (bidSize - remainingSize).toString();
+                    remainingSize = 0;
+                }
+            } else {
+                break;
+            }
+        }
+    }
+    return remainingSize.toString();
 };
 
 const orderBookSlice = createSlice({
@@ -73,22 +114,13 @@ const orderBookSlice = createSlice({
         updateOrderBook(state, action: PayloadAction<[string, string, string][]>) {
             action.payload.forEach(([side, price, size]) => {
                 const priceKey = price.toString();
-
-                if (side === 'buy') {
-                    if (Number(size) === 0) {
-                        console.log('deleting', side, price, size);
-
-                        delete state.bids[priceKey];
-                    } else {
-                        state.bids[priceKey] = size;
-                    }
-                } else if (side === 'sell') {
-                    if (Number(size) === 0) {
-                        console.log('deleting', side, price, size);
-
-                        delete state.asks[priceKey];
-                    } else {
-                        state.asks[priceKey] = size;
+                const remainingSize = matchOrder(state, side, price, size);
+                
+                if (Number(remainingSize) > 0) {
+                    if (side === 'buy') {
+                        state.bids[priceKey] = remainingSize;
+                    } else if (side === 'sell') {
+                        state.asks[priceKey] = remainingSize;
                     }
                 }
             });
