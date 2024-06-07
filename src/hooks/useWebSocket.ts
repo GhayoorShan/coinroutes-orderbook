@@ -22,14 +22,14 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
                     console.log(data.bids[0]);
                     dispatch(setOrderBookSnapshot({ bids: data.bids, asks: data.asks }));
                 }
-                if (data.type === 'l2update') {
-                    throttledUpdateOrderBook(data.changes);
-                }
-
-                // if (data.type === 'ticker') {
-                //     dispatch(setBestBid({ price: data.best_bid, size: data.best_bid_size }));
-                //     dispatch(setBestAsk({ price: data.best_ask, size: data.best_ask_size }));
+                // if (data.type === 'l2update') {
+                //     throttledUpdateOrderBook(data.changes);
                 // }
+
+                if (data.type === 'ticker') {
+                    dispatch(setBestBid({ price: data.best_bid, size: data.best_bid_size }));
+                    dispatch(setBestAsk({ price: data.best_ask, size: data.best_ask_size }));
+                }
             } catch (error) {
                 console.error('Error processing WebSocket message:', error);
             }

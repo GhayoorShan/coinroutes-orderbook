@@ -20,7 +20,7 @@ const StyledTableRow = styled(TableRow)<{ percentage: number; type: 'bid' | 'ask
 
 const StyledHeadRow = styled(TableRow)({
     '& > *': {
-        padding: '5px',
+        padding: '2px',
         fontSize: '14px',
         borderBottom: 'none !important'
     }
@@ -36,13 +36,13 @@ const StyledTableHead = styled(TableHead)({
 
 const ShimmerRow = styled(TableRow)(({ theme }) => ({
     '& > *': {
-        padding: '5px',
+        padding: '2px',
         fontSize: '14px',
         width: '150px',
         borderBottom: 'none !important',
         backgroundColor: theme.palette.background.default,
         animation: 'shimmer 1.5s infinite linear',
-        backgroundImage: `linear-gradient(to right, ${theme.palette.background.default} 0%, #121212 30%, ${theme.palette.background.default} 40%, ${theme.palette.background.default} 100%)`, // Use theme color dynamically
+        backgroundImage: `linear-gradient(to right, ${theme.palette.background.default} 0%, #272727 30%, ${theme.palette.background.default} 40%, ${theme.palette.background.default} 100%)`, // Use theme color dynamically
         backgroundSize: '1000px 100%',
         '@keyframes shimmer': {
             '0%': {

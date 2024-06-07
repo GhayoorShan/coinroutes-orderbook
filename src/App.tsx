@@ -1,34 +1,49 @@
-// src/App.tsx
-import React, { useState } from 'react';
-import { Container, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import React from 'react';
+import { Container, Grid, styled } from '@mui/material';
 import useWebSocket from './hooks/useWebSocket';
 import TopOfBook from './screens/Dashboard/TopOfBook';
 import LadderView from './screens/Dashboard/LadderView';
+import Dropdown from './components/dropdown';
+import { ALLOWED_CURRENCY, FEED_URL } from './utils/constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from './redux/store';
+import { setSelectedPair } from './redux/features/currencyPairSlice ';
+import { resetOrderBook } from './redux/features/orderBookSlice';
+import RealTimeChart from './screens/Dashboard/RealTimeChart';
+
+const CenteredContainer = styled(Container)({
+    paddingTop: '50px'
+});
 
 const App: React.FC = () => {
-    const [currencyPair, setCurrencyPair] = useState('BTC-USD');
+    const { currencyPair } = useSelector((state: RootState) => state.currencyPairs);
+
+    const dispatch = useDispatch();
+    const handleCurrencyChange = (value: string) => {
+        dispatch(setSelectedPair(value));
+        dispatch(resetOrderBook());
+    };
 
     const { isConnected } = useWebSocket({
-        url: `wss://ws-feed.pro.coinbase.com`,
+        url: FEED_URL,
         currencyPair
     });
     console.log(isConnected);
 
     return (
-        <Container>
-            <FormControl fullWidth margin="normal">
-                <InputLabel id="currency-pair-label">Currency Pair</InputLabel>
-                <Select labelId="currency-pair-label" value={currencyPair} onChange={(e) => setCurrencyPair(e.target.value)}>
-                    <MenuItem value="BTC-USD">BTC-USD</MenuItem>
-                    <MenuItem value="ETH-USD">ETH-USD</MenuItem>
-                    <MenuItem value="LTC-USD">LTC-USD</MenuItem>
-                    <MenuItem value="BCH-USD">BCH-USD</MenuItem>
-                </Select>
-            </FormControl>
-            <TopOfBook />
-            <LadderView />
-            {/* <PriceChart data={priceData} /> */}
-        </Container>
+        <CenteredContainer>
+            <Dropdown options={ALLOWED_CURRENCY} value={currencyPair} onChange={handleCurrencyChange} label="Currency pair" />
+
+            <Grid container direction="row" justifyContent={'space-between'} pt={3}>
+                <Grid>
+                    <TopOfBook />
+                    <RealTimeChart />
+                </Grid>
+                <Grid>
+                    <LadderView />
+                </Grid>
+            </Grid>
+        </CenteredContainer>
     );
 };
 

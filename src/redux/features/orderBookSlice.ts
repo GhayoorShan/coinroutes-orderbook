@@ -104,7 +104,7 @@ const orderBookSlice = createSlice({
         setBestAsk(state, action: PayloadAction<Order>) {
             state.bestAsk = action.payload;
         },
-        resetOrderBook(state) {
+        resetOrderBook() {
             return initialState;
         },
         clearPriceData(state) {
