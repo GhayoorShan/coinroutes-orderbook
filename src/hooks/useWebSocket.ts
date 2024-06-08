@@ -17,6 +17,7 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
         (event: MessageEvent) => {
             try {
                 const data = JSON.parse(event.data);
+                const currentTime = new Date().toISOString();
 
                 if (data.type === 'snapshot') {
                     console.log(data.bids[0]);
@@ -27,8 +28,8 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
                 }
 
                 if (data.type === 'ticker') {
-                    dispatch(setBestBid({ price: data.best_bid, size: data.best_bid_size }));
-                    dispatch(setBestAsk({ price: data.best_ask, size: data.best_ask_size }));
+                    dispatch(setBestBid({ order: { price: data.best_bid, size: data.best_bid_size }, time: currentTime }));
+                    dispatch(setBestAsk({ order: { price: data.best_ask, size: data.best_ask_size }, time: currentTime }));
                 }
             } catch (error) {
                 console.error('Error processing WebSocket message:', error);

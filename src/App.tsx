@@ -34,7 +34,7 @@ const App: React.FC = () => {
         <CenteredContainer>
             <Dropdown options={ALLOWED_CURRENCY} value={currencyPair} onChange={handleCurrencyChange} label="Currency pair" />
 
-            <Grid container direction="row" justifyContent={'space-between'} pt={3}>
+            <Grid container direction="row" justifyContent={'space-between'} pt={2}>
                 <Grid>
                     <TopOfBook />
                     <RealTimeChart />

@@ -1,92 +1,68 @@
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useSelector } from 'react-redux';
+import { Chart as ChartJS, CategoryScale, LinearScale, TimeScale, PointElement, LineElement, Title, Tooltip, Legend, ChartOptions } from 'chart.js';
+import 'chartjs-adapter-date-fns'; // Import the date-fns adapter
 import { RootState } from '../../redux/store';
+import { Grid } from '@mui/material';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, TimeScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const RealTimeChart: React.FC = () => {
-    const { bestBid, bestAsk } = useSelector((state: RootState) => state.orderBook);
-    const [chartData, setChartData] = useState({
-        labels: [] as string[],
-        datasets: [
-            {
-                label: 'Top Bids',
-                data: [] as number[],
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)'
-            },
-            {
-                label: 'Top Asks',
-                data: [] as number[],
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)'
-            }
-        ]
-    });
+    const bestBid = useSelector((state: RootState) => state.orderBook.bestBid);
+    const bestAsk = useSelector((state: RootState) => state.orderBook.bestAsk);
+    const [chartData, setChartData] = useState<{ time: string; bestBid: number; bestAsk: number }[]>([]);
 
     useEffect(() => {
         if (bestBid && bestAsk) {
-            const currentTime = new Date().toLocaleTimeString();
-
             setChartData((prevData) => {
-                const updatedLabels = [...prevData.labels, currentTime].slice(-20);
-                const updatedBidData = [...prevData.datasets[0].data, parseFloat(bestBid.price)].slice(-20);
-                const updatedAskData = [...prevData.datasets[1].data, parseFloat(bestAsk.price)].slice(-20);
-
-                return {
-                    labels: updatedLabels,
-                    datasets: [
-                        {
-                            ...prevData.datasets[0],
-                            data: updatedBidData
-                        },
-                        {
-                            ...prevData.datasets[1],
-                            data: updatedAskData
-                        }
-                    ]
-                };
+                const newData = [{ time: new Date().toISOString(), bestBid: Number(bestBid.price), bestAsk: Number(bestAsk.price) }, ...prevData];
+                return newData; // Limit the data to the last 20 records
             });
         }
     }, [bestBid, bestAsk]);
 
-    return (
-        <div style={{ height: '600px', width: '800px', paddingTop: '100px' }}>
-            <Line
-                data={chartData}
-                options={{
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Real-Time Top Bids and Asks'
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Time'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Price'
-                            }
-                        }
-                    }
-                }}
-                height={600}
-                width={800}
-            />
-        </div>
-    );
+    const data = {
+        labels: chartData.map((d) => d.time),
+        datasets: [
+            {
+                label: 'Best Bid',
+                data: chartData.map((d) => ({ x: d.time, y: d.bestBid })),
+                fill: false,
+                borderColor: 'green'
+            },
+            {
+                label: 'Best Ask',
+                data: chartData.map((d) => ({ x: d.time, y: d.bestAsk })),
+                fill: false,
+                borderColor: 'red'
+            }
+        ]
+    };
+
+    const options: ChartOptions<'line'> = {
+        responsive: true,
+        scales: {
+            x: {
+                type: 'time',
+                time: {
+                    unit: 'second'
+                },
+                title: {
+                    display: true,
+                    text: 'Time'
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Price'
+                }
+            }
+        }
+    };
+
+    return <Grid pt={10}>{chartData.length > 0 ? <Line data={data} options={options} height={400} width={600} /> : <p>No data available</p>}</Grid>;
 };
 
 export default RealTimeChart;

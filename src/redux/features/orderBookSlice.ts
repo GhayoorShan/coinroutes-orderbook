@@ -15,6 +15,7 @@ interface OrderBookState {
     topAsks: Order[];
     priceData: { time: string; price: number }[];
     aggregation: number;
+    topN: number;
 }
 
 const initialState: OrderBookState = {
@@ -25,7 +26,8 @@ const initialState: OrderBookState = {
     priceData: [],
     topBids: [],
     topAsks: [],
-    aggregation: 0.01 // Default aggregation level
+    aggregation: 0.01, // Default aggregation level
+    topN: 10 // Default top N value
 };
 
 const aggregatePrice = (price: number, aggregation: number): number => {
@@ -58,6 +60,7 @@ const getTopOrdersWithPercentage = (orders: Record<string, string>, topN: number
         percentage: totalSize > 0 ? ((Number(order.size) / totalSize) * 100).toFixed(2) : '0.00'
     }));
 };
+
 // Order matching logic
 // if the order size is larger than what is made available by the top buyer or seller,
 // the match needs to occur for the number of shares available and the matching algorithm needs to be called recursively for the remaining shares.
@@ -108,8 +111,8 @@ const orderBookSlice = createSlice({
         setOrderBookSnapshot(state, action: PayloadAction<{ bids: [string, string][]; asks: [string, string][] }>) {
             state.bids = Object.fromEntries(action.payload.bids);
             state.asks = Object.fromEntries(action.payload.asks);
-            state.topBids = getTopOrdersWithPercentage(state.bids, 10, false, state.aggregation);
-            state.topAsks = getTopOrdersWithPercentage(state.asks, 10, true, state.aggregation);
+            state.topBids = getTopOrdersWithPercentage(state.bids, state.topN, false, state.aggregation);
+            state.topAsks = getTopOrdersWithPercentage(state.asks, state.topN, true, state.aggregation);
         },
         updateOrderBook(state, action: PayloadAction<[string, string, string][]>) {
             action.payload.forEach(([side, price, size]) => {
@@ -124,17 +127,17 @@ const orderBookSlice = createSlice({
                     }
                 }
             });
-            state.topBids = getTopOrdersWithPercentage(state.bids, 10, false, state.aggregation);
-            state.topAsks = getTopOrdersWithPercentage(state.asks, 10, true, state.aggregation);
+            state.topBids = getTopOrdersWithPercentage(state.bids, state.topN, false, state.aggregation);
+            state.topAsks = getTopOrdersWithPercentage(state.asks, state.topN, true, state.aggregation);
         },
         addPriceData(state, action: PayloadAction<{ time: string; price: number }>) {
             state.priceData.push(action.payload);
         },
-        setBestBid(state, action: PayloadAction<Order>) {
-            state.bestBid = action.payload;
+        setBestBid(state, action: PayloadAction<{ order: Order, time: string }>) {
+            state.bestBid = action.payload.order;
         },
-        setBestAsk(state, action: PayloadAction<Order>) {
-            state.bestAsk = action.payload;
+        setBestAsk(state, action: PayloadAction<{ order: Order, time: string }>) {
+            state.bestAsk = action.payload.order;
         },
         resetOrderBook() {
             return initialState;
@@ -145,13 +148,19 @@ const orderBookSlice = createSlice({
         setAggregation(state, action: PayloadAction<number>) {
             state.aggregation = action.payload;
             // Update top orders with new aggregation
-            state.topBids = getTopOrdersWithPercentage(state.bids, 10, false, state.aggregation);
-            state.topAsks = getTopOrdersWithPercentage(state.asks, 10, true, state.aggregation);
+            state.topBids = getTopOrdersWithPercentage(state.bids, state.topN, false, state.aggregation);
+            state.topAsks = getTopOrdersWithPercentage(state.asks, state.topN, true, state.aggregation);
+        },
+        setTopN(state, action: PayloadAction<number>) {
+            state.topN = action.payload;
+            // Update top orders with new topN value
+            state.topBids = getTopOrdersWithPercentage(state.bids, state.topN, false, state.aggregation);
+            state.topAsks = getTopOrdersWithPercentage(state.asks, state.topN, true, state.aggregation);
         }
     }
 });
 
-export const { setOrderBookSnapshot, updateOrderBook, addPriceData, setBestBid, setBestAsk, resetOrderBook, clearPriceData, setAggregation } =
+export const { setOrderBookSnapshot, updateOrderBook, addPriceData, setBestBid, setBestAsk, resetOrderBook, clearPriceData, setAggregation, setTopN } =
     orderBookSlice.actions;
 
 export default orderBookSlice.reducer;
