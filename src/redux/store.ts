@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import orderBookSlice from './features/orderBookSlice';
 import currencyPairSlice from './features/currencyPairSlice ';
+import chartSlice from './features/chartSlice';
 
 const store = configureStore({
     reducer: {
         orderBook: orderBookSlice,
-        currencyPairs: currencyPairSlice
+        currencyPairs: currencyPairSlice,
+        chart: chartSlice
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

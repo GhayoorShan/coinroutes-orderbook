@@ -6,11 +6,16 @@ interface Order {
     percentage?: number | string;
 }
 
+interface BestBid {
+    price: string;
+    size: string;
+}
+
 interface OrderBookState {
     bids: Record<string, string>;
     asks: Record<string, string>;
-    bestBid: Order | null;
-    bestAsk: Order | null;
+    bestBidCurrent: BestBid | null;
+    bestAskCurrrent: BestBid | null;
     topBids: Order[];
     topAsks: Order[];
     priceData: { time: string; price: number }[];
@@ -21,8 +26,8 @@ interface OrderBookState {
 const initialState: OrderBookState = {
     bids: {},
     asks: {},
-    bestBid: null,
-    bestAsk: null,
+    bestBidCurrent: null,
+    bestAskCurrrent: null,
     priceData: [],
     topBids: [],
     topAsks: [],
@@ -70,7 +75,7 @@ const matchOrder = (state: OrderBookState, side: string, price: string, size: st
         const sortedAsks = Object.keys(state.asks).sort((a, b) => Number(a) - Number(b));
         for (const askPrice of sortedAsks) {
             if (Number(price) >= Number(askPrice) && remainingSize > 0) {
-                console.log("Buy match","price", price,"askprice", askPrice, "remainingSize",remainingSize);
+                console.log('Buy match', 'price', price, 'askprice', askPrice, 'remainingSize', remainingSize);
                 const askSize = Number(state.asks[askPrice]);
                 if (askSize <= remainingSize) {
                     remainingSize -= askSize;
@@ -87,7 +92,7 @@ const matchOrder = (state: OrderBookState, side: string, price: string, size: st
         const sortedBids = Object.keys(state.bids).sort((a, b) => Number(b) - Number(a));
         for (const bidPrice of sortedBids) {
             if (Number(price) <= Number(bidPrice) && remainingSize > 0) {
-                console.log("Sell match","price", price,"askprice", bidPrice, "remainingSize",remainingSize);
+                console.log('Sell match', 'price', price, 'askprice', bidPrice, 'remainingSize', remainingSize);
                 const bidSize = Number(state.bids[bidPrice]);
                 if (bidSize <= remainingSize) {
                     remainingSize -= bidSize;
@@ -118,7 +123,7 @@ const orderBookSlice = createSlice({
             action.payload.forEach(([side, price, size]) => {
                 const priceKey = price.toString();
                 const remainingSize = matchOrder(state, side, price, size);
-                
+
                 if (Number(remainingSize) > 0) {
                     if (side === 'buy') {
                         state.bids[priceKey] = remainingSize;
@@ -133,11 +138,11 @@ const orderBookSlice = createSlice({
         addPriceData(state, action: PayloadAction<{ time: string; price: number }>) {
             state.priceData.push(action.payload);
         },
-        setBestBid(state, action: PayloadAction<{ order: Order, time: string }>) {
-            state.bestBid = action.payload.order;
+        setBestBidCurrent(state, action: PayloadAction<BestBid>) {
+            state.bestBidCurrent = action.payload;
         },
-        setBestAsk(state, action: PayloadAction<{ order: Order, time: string }>) {
-            state.bestAsk = action.payload.order;
+        setBestAskCurrent(state, action: PayloadAction<BestBid>) {
+            state.bestAskCurrrent = action.payload;
         },
         resetOrderBook() {
             return initialState;
@@ -160,7 +165,16 @@ const orderBookSlice = createSlice({
     }
 });
 
-export const { setOrderBookSnapshot, updateOrderBook, addPriceData, setBestBid, setBestAsk, resetOrderBook, clearPriceData, setAggregation, setTopN } =
-    orderBookSlice.actions;
+export const {
+    setOrderBookSnapshot,
+    updateOrderBook,
+    addPriceData,
+    setBestBidCurrent,
+    setBestAskCurrent,
+    resetOrderBook,
+    clearPriceData,
+    setAggregation,
+    setTopN
+} = orderBookSlice.actions;
 
 export default orderBookSlice.reducer;

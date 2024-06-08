@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import {  updateOrderBook, setOrderBookSnapshot, setBestBid, setBestAsk } from '../redux/features/orderBookSlice';
+import { updateOrderBook, setOrderBookSnapshot, setBestBidCurrent, setBestAskCurrent } from '../redux/features/orderBookSlice';
 import { throttle } from '../utils/throttle';
+import { addBestAsk, addBestBid } from '../redux/features/chartSlice';
 
 interface UseWebSocketProps {
     url: string;
@@ -20,7 +21,6 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
                 const currentTime = new Date().toISOString();
 
                 if (data.type === 'snapshot') {
-                    console.log(data.bids[0]);
                     dispatch(setOrderBookSnapshot({ bids: data.bids, asks: data.asks }));
                 }
                 if (data.type === 'l2update') {
@@ -28,8 +28,10 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
                 }
 
                 if (data.type === 'ticker') {
-                    dispatch(setBestBid({ order: { price: data.best_bid, size: data.best_bid_size }, time: currentTime }));
-                    dispatch(setBestAsk({ order: { price: data.best_ask, size: data.best_ask_size }, time: currentTime }));
+                    dispatch(addBestAsk({ price: data.best_bid, size: data.best_bid_size, time: currentTime }));
+                    dispatch(addBestBid({ price: data.best_ask, size: data.best_ask_size, time: currentTime }));
+                    dispatch(setBestBidCurrent({ price: data.best_ask, size: data.best_ask_size }));
+                    dispatch(setBestAskCurrent({ price: data.best_ask, size: data.best_ask_size }));
                 }
             } catch (error) {
                 console.error('Error processing WebSocket message:', error);

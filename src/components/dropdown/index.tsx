@@ -1,5 +1,6 @@
 import React from 'react';
-import { Select, MenuItem, SelectChangeEvent, styled, FormControl, InputLabel } from '@mui/material';
+import { MenuItem, SelectChangeEvent, styled, InputLabel } from '@mui/material';
+import { StyledFormControl, StyledSelect } from './styles';
 
 interface DropdownProps {
     options: string[];
@@ -7,19 +8,6 @@ interface DropdownProps {
     onChange: (value: string) => void;
     label: string;
 }
-
-const StyledFormControl = styled(FormControl)`
-    width: 300px !important;
-    background-color: black;
-`;
-
-const StyledSelect = styled(Select)({
-    background: 'black !important',
-    color: 'white',
-    '& .MuiSelect-icon': {
-        color: 'white'
-    }
-});
 
 const StyledMenuItem = styled(MenuItem)({});
 
