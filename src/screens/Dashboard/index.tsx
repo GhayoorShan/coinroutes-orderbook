@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Grid, styled } from '@mui/material';
+import { Grid } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { setSelectedPair } from '../../redux/features/currencyPairSlice ';
@@ -32,7 +32,6 @@ const Dashboard: React.FC = () => {
     return (
         <CenteredContainer>
             <Dropdown options={ALLOWED_CURRENCY} value={currencyPair} onChange={handleCurrencyChange} label="Currency pair" />
-
             <Grid container direction="row" justifyContent={'space-between'} pt={2}>
                 <Grid>
                     <TopOfBook />

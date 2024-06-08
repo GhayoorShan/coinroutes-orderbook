@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, Grid, Typography, styled } from '@mui/material';
-import { RootState } from '../../redux/store';
+import { RootState } from '../../../redux/store';
 import { useSelector } from 'react-redux';
 
 const StyledCard = styled(Card)({
@@ -20,7 +20,7 @@ const TopOfBook: React.FC<{}> = () => {
             <Grid item xs={12} md={6}>
                 <StyledCard>
                     <CardContent>
-                        <Typography variant="h5" gutterBottom>
+                        <Typography variant="h5" gutterBottom color={'#2ECC71'}>
                             Best Bids
                         </Typography>
                         <Typography variant="body1">price: {bestBidCurrent?.price || 0}</Typography>
@@ -31,7 +31,7 @@ const TopOfBook: React.FC<{}> = () => {
             <Grid item xs={12} md={6}>
                 <StyledCard>
                     <CardContent>
-                        <Typography variant="h5" gutterBottom>
+                        <Typography variant="h5" gutterBottom color={'#F44336'}>
                             Best Asks
                         </Typography>
                         <Typography variant="body1">Price: {bestBidCurrent?.price || 0}</Typography>

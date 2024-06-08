@@ -1,4 +1,3 @@
-// src/utils/throttle.ts
 export function throttle(func: (...args: any[]) => void, limit: number) {
     let inThrottle: boolean;
     return function (...args: any[]) {

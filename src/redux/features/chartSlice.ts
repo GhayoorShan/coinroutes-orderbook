@@ -22,9 +22,15 @@ const chartDataSlice = createSlice({
     reducers: {
         addBestBid(state, action: PayloadAction<ChartDataPoint>) {
             state.bestBidData.push(action.payload);
+            if (state.bestBidData.length > 100) {
+                state.bestBidData = state.bestBidData.slice(-100);
+            }
         },
         addBestAsk(state, action: PayloadAction<ChartDataPoint>) {
             state.bestAskData.push(action.payload);
+            if (state.bestAskData.length > 100) {
+                state.bestAskData = state.bestAskData.slice(-100);
+            }
         },
         resetBestBids(state) {
             state.bestAskData = [];

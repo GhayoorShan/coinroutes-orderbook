@@ -3,7 +3,7 @@ import { Line } from 'react-chartjs-2';
 import { useSelector } from 'react-redux';
 import { Chart as ChartJS, CategoryScale, LinearScale, TimeScale, PointElement, LineElement, Title, Tooltip, Legend, ChartOptions } from 'chart.js';
 import 'chartjs-adapter-date-fns';
-import { RootState } from '../../redux/store';
+import { RootState } from '../../../redux/store';
 import { CircularProgress, Grid } from '@mui/material';
 
 ChartJS.register(CategoryScale, LinearScale, TimeScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -19,13 +19,13 @@ const RealTimeChart: React.FC = () => {
                 label: 'Best Bid',
                 data: bestBidData.map((d) => ({ x: d.time, y: Number(d.price) })),
                 fill: false,
-                borderColor: 'green'
+                borderColor: '#2ECC71'
             },
             {
                 label: 'Best Ask',
                 data: bestAskData.map((d) => ({ x: d.time, y: Number(d.price) })),
                 fill: false,
-                borderColor: 'red'
+                borderColor: '#F44336'
             }
         ]
     };

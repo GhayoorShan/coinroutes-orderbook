@@ -18,7 +18,6 @@ interface OrderBookState {
     bestAskCurrrent: BestBid | null;
     topBids: Order[];
     topAsks: Order[];
-    priceData: { time: string; price: number }[];
     aggregation: number;
     topN: number;
 }
@@ -28,7 +27,6 @@ const initialState: OrderBookState = {
     asks: {},
     bestBidCurrent: null,
     bestAskCurrrent: null,
-    priceData: [],
     topBids: [],
     topAsks: [],
     aggregation: 0.01, // Default aggregation level
@@ -92,7 +90,7 @@ const matchOrder = (state: OrderBookState, side: string, price: string, size: st
         const sortedBids = Object.keys(state.bids).sort((a, b) => Number(b) - Number(a));
         for (const bidPrice of sortedBids) {
             if (Number(price) <= Number(bidPrice) && remainingSize > 0) {
-                console.log('Sell match', 'price', price, 'askprice', bidPrice, 'remainingSize', remainingSize);
+                console.log('Sell match', 'price', price, 'bidPrice', bidPrice, 'remainingSize', remainingSize);
                 const bidSize = Number(state.bids[bidPrice]);
                 if (bidSize <= remainingSize) {
                     remainingSize -= bidSize;
@@ -135,9 +133,7 @@ const orderBookSlice = createSlice({
             state.topBids = getTopOrdersWithPercentage(state.bids, state.topN, false, state.aggregation);
             state.topAsks = getTopOrdersWithPercentage(state.asks, state.topN, true, state.aggregation);
         },
-        addPriceData(state, action: PayloadAction<{ time: string; price: number }>) {
-            state.priceData.push(action.payload);
-        },
+
         setBestBidCurrent(state, action: PayloadAction<BestBid>) {
             state.bestBidCurrent = action.payload;
         },
@@ -147,9 +143,7 @@ const orderBookSlice = createSlice({
         resetOrderBook() {
             return initialState;
         },
-        clearPriceData(state) {
-            state.priceData = [];
-        },
+
         setAggregation(state, action: PayloadAction<number>) {
             state.aggregation = action.payload;
             // Update top orders with new aggregation
@@ -165,16 +159,7 @@ const orderBookSlice = createSlice({
     }
 });
 
-export const {
-    setOrderBookSnapshot,
-    updateOrderBook,
-    addPriceData,
-    setBestBidCurrent,
-    setBestAskCurrent,
-    resetOrderBook,
-    clearPriceData,
-    setAggregation,
-    setTopN
-} = orderBookSlice.actions;
+export const { setOrderBookSnapshot, updateOrderBook, setBestBidCurrent, setBestAskCurrent, resetOrderBook, setAggregation, setTopN } =
+    orderBookSlice.actions;
 
 export default orderBookSlice.reducer;

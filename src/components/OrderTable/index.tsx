@@ -1,4 +1,3 @@
-// OrderTable.tsx
 import React from 'react';
 import { TableBody, TableCell } from '@mui/material';
 import { useTheme } from '@mui/material/styles';

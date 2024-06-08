@@ -1,12 +1,12 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectTopAsks, selectTopBids } from '../../redux/features/selectors.ts';
-import OrderTable from '../../components/OrderTable/index.tsx';
-import Dropdown from '../../components/dropdown/index.tsx';
-import { ALLOWED_AGGREGATION } from '../../utils/constants.ts';
-import { RootState } from '../../redux/store.ts';
-import { setAggregation } from '../../redux/features/orderBookSlice.ts';
+import { selectTopAsks, selectTopBids } from '../../../redux/features/selectors.ts.ts';
+import OrderTable from '../../../components/OrderTable/index.tsx';
+import Dropdown from '../../../components/dropdown/index.tsx';
+import { ALLOWED_AGGREGATION } from '../../../utils/constants.ts';
+import { RootState } from '../../../redux/store.ts';
+import { setAggregation } from '../../../redux/features/orderBookSlice.ts';
 
 const LadderView: React.FC<{}> = () => {
     const topBids = useSelector(selectTopBids);

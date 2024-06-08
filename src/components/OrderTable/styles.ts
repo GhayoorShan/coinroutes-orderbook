@@ -1,8 +1,7 @@
-// StyledComponents.tsx
 import { Table, TableHead, TableRow, styled } from '@mui/material';
 
 export const StyledTableContainer = styled('div')({
-    maxHeight: 250,
+    maxHeight: 240,
     overflowY: 'auto',
     '&::-webkit-scrollbar': {
         width: '8px'
