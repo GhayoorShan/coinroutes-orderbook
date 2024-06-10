@@ -29,14 +29,23 @@ const RealTimeChart: React.FC = () => {
             }
         ]
     };
-
     const options: ChartOptions<'line'> = {
         responsive: true,
         scales: {
             x: {
                 type: 'time',
                 time: {
-                    unit: 'second'
+                    unit: 'second',
+                    displayFormats: {
+                        second: 'h:mm:ss a'
+                    },
+                    minUnit: 'second'
+                },
+                ticks: {
+                    source: 'data',
+                    maxRotation: 0,
+                    autoSkip: true,
+                    stepSize: 15
                 },
                 title: {
                     display: true,

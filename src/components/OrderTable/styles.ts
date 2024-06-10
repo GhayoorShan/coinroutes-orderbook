@@ -1,7 +1,7 @@
 import { Table, TableHead, TableRow, styled } from '@mui/material';
 
 export const StyledTableContainer = styled('div')({
-    maxHeight: 240,
+    maxHeight: 300,
     overflowY: 'auto',
     '&::-webkit-scrollbar': {
         width: '8px'

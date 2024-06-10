@@ -43,7 +43,7 @@ const useWebSocket = ({ url, currencyPair }: UseWebSocketProps) => {
     const throttledUpdateOrderBook = useCallback(
         throttle((changes: [string, string, string][]) => {
             dispatch(updateOrderBook(changes));
-        }, 200),
+        }, 500),
         [dispatch]
     );
 
