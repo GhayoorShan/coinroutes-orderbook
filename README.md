@@ -1,6 +1,3 @@
-![image](https://github.com/GhayoorShan/coinroutes-orderbook/assets/38887731/5652a3f3-06cd-4730-999d-87637208764e)
-
-
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
